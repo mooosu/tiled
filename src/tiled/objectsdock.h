@@ -21,6 +21,7 @@
 #ifndef OBJECTSDOCK_H
 #define OBJECTSDOCK_H
 
+#include <QSortFilterProxyModel>
 #include <QDockWidget>
 #include <QTreeView>
 
@@ -96,6 +97,7 @@ private:
     MapDocument *mMapDocument;
     bool mSynching;
     MapObjectModel *mMapObjectModel;
+    QSortFilterProxyModel* mProxyModel;
 };
 
 } // namespace Internal

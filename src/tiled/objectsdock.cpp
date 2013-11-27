@@ -223,6 +223,7 @@ ObjectsView::ObjectsView(QWidget *parent)
     , mMapDocument(0)
     , mSynching(false)
 {
+    setSortingEnabled(true);
     setRootIsDecorated(true);
     setHeaderHidden(false);
     setItemsExpandable(true);
@@ -233,6 +234,7 @@ ObjectsView::ObjectsView(QWidget *parent)
 
     connect(this, SIGNAL(pressed(QModelIndex)), SLOT(onPressed(QModelIndex)));
     connect(this, SIGNAL(activated(QModelIndex)), SLOT(onActivated(QModelIndex)));
+    mProxyModel = new QSortFilterProxyModel(this);
 }
 
 QSize ObjectsView::sizeHint() const
@@ -252,7 +254,10 @@ void ObjectsView::setMapDocument(MapDocument *mapDoc)
 
     if (mMapDocument) {
         mMapObjectModel = mMapDocument->mapObjectModel();
-        setModel(mMapObjectModel);
+
+        mProxyModel->setSourceModel(mMapObjectModel);
+        setModel(mProxyModel);
+
         model()->setMapDocument(mapDoc);
 
         // 2 equal-sized columns, user can't adjust
@@ -274,7 +279,7 @@ void ObjectsView::setMapDocument(MapDocument *mapDoc)
 
 void ObjectsView::onPressed(const QModelIndex &index)
 {
-    if (MapObject *mapObject = model()->toMapObject(index))
+    if (MapObject *mapObject = model()->toMapObject(mProxyModel->mapToSource(index)))
         mMapDocument->setCurrentObject(mapObject);
     else if (ObjectGroup *objectGroup = model()->toObjectGroup(index))
         mMapDocument->setCurrentObject(objectGroup);
@@ -282,7 +287,7 @@ void ObjectsView::onPressed(const QModelIndex &index)
 
 void ObjectsView::onActivated(const QModelIndex &index)
 {
-    if (MapObject *mapObject = model()->toMapObject(index)) {
+    if (MapObject *mapObject = model()->toMapObject(mProxyModel->mapToSource(index))) {
         mMapDocument->setCurrentObject(mapObject);
         mMapDocument->emitEditCurrentObject();
     }
@@ -296,7 +301,10 @@ void ObjectsView::selectionChanged(const QItemSelection &selected,
     if (!mMapDocument || mSynching)
         return;
 
-    QModelIndexList selectedRows = selectionModel()->selectedRows();
+    QModelIndexList selectedRows ;
+    foreach(const QModelIndex& index ,selectionModel()->selectedRows()){
+        selectedRows.append(mProxyModel->mapToSource(index));
+    }
     int currentLayerIndex = -1;
 
     QList<MapObject*> selectedObjects;
@@ -343,7 +351,7 @@ void ObjectsView::selectedObjectsChanged()
     clearSelection();
     foreach (MapObject *o, selectedObjects) {
         QModelIndex index = model()->index(o);
-        selectionModel()->select(index, QItemSelectionModel::Select |  QItemSelectionModel::Rows);
+        selectionModel()->select(mProxyModel->mapToSource(index), QItemSelectionModel::Select |  QItemSelectionModel::Rows);
     }
     mSynching = false;
 
