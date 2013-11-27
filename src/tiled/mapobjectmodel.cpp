@@ -87,7 +87,7 @@ int MapObjectModel::rowCount(const QModelIndex &parent) const
 int MapObjectModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return 2; // MapObject name|type
+    return 3; // MapObject name|type
 }
 
 QVariant MapObjectModel::data(const QModelIndex &index, int role) const
@@ -96,7 +96,13 @@ QVariant MapObjectModel::data(const QModelIndex &index, int role) const
         switch (role) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            return index.column() ? mapObject->type() : mapObject->name();
+            {
+                switch( index.column()) {
+                case 0: return mapObject->id();
+                case 1: return mapObject->name();
+                case 2: return mapObject->type();
+                }
+            }
         case Qt::DecorationRole:
             return QVariant(); // no icon -> maybe the color?
         case Qt::CheckStateRole:
@@ -147,18 +153,27 @@ bool MapObjectModel::setData(const QModelIndex &index, const QVariant &value,
         }
         case Qt::EditRole: {
             const QString s = value.toString();
-            if (index.column() == 0 && s != mapObject->name()) {
+            if (index.column() == 1 && s != mapObject->name()) {
                 QUndoStack *undo = mMapDocument->undoStack();
                 undo->beginMacro(tr("Change Object Name"));
                 undo->push(new ChangeMapObject(mMapDocument, mapObject,
-                                               s, mapObject->type()));
+                                               s, mapObject->type(),mapObject->id()));
                 undo->endMacro();
             }
-            if (index.column() == 1 && s != mapObject->type()) {
+            if (index.column() == 2 && s != mapObject->type()) {
                 QUndoStack *undo = mMapDocument->undoStack();
                 undo->beginMacro(tr("Change Object Type"));
                 undo->push(new ChangeMapObject(mMapDocument, mapObject,
-                                               mapObject->name(), s));
+                                               mapObject->name(), s,mapObject->id()));
+                undo->endMacro();
+            }
+            const int id = value.toInt();
+            if (index.column() == 0 && id != mapObject->id()) {
+                QUndoStack *undo = mMapDocument->undoStack();
+                undo->beginMacro(tr("Change Object Id"));
+                undo->push(new ChangeMapObject(mMapDocument, mapObject,
+                                               mapObject->name(),
+                                               mapObject->type(), id));
                 undo->endMacro();
             }
             return true;
@@ -206,8 +221,9 @@ QVariant MapObjectModel::headerData(int section, Qt::Orientation orientation,
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         switch (section) {
-        case 0: return tr("Name");
-        case 1: return tr("Type");
+        case 0: return tr("Id");
+        case 1: return tr("Name");
+        case 2: return tr("Type");
         }
     }
     return QVariant();
@@ -350,6 +366,7 @@ void MapObjectModel::layerAboutToBeRemoved(int index)
 
 void MapObjectModel::insertObject(ObjectGroup *og, int index, MapObject *o)
 {
+    o->setId(mMap->nextSeq());
     const int row = (index >= 0) ? index : og->objectCount();
     beginInsertRows(this->index(og), row, row);
     og->insertObject(row, o);
@@ -402,6 +419,14 @@ void MapObjectModel::setObjectName(MapObject *o, const QString &name)
 void MapObjectModel::setObjectType(MapObject *o, const QString &type)
 {
     o->setType(type);
+    QModelIndex index = this->index(o, 1);
+    emit dataChanged(index, index);
+    emit objectsChanged(QList<MapObject*>() << o);
+}
+
+void MapObjectModel::setObjectId(MapObject *o, const int id)
+{
+    o->setId(id);
     QModelIndex index = this->index(o, 1);
     emit dataChanged(index, index);
     emit objectsChanged(QList<MapObject*>() << o);

@@ -97,6 +97,7 @@ private:
     enum PropertyId {
         NameProperty,
         TypeProperty,
+        IdProperty,
         PositionProperty,
         SizeProperty,
         RotationProperty,

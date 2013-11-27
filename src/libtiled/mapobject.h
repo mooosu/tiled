@@ -71,9 +71,19 @@ public:
 
     MapObject();
 
-    MapObject(const QString &name, const QString &type,
+    MapObject(int id, const QString &name, const QString &type,
               const QPointF &pos,
               const QSizeF &size);
+    /** 
+     * Returns the id of this object. The id is usually just used for
+     * identification and ordering of the object in the editor.
+     */
+    int id() const { return mId; }
+
+    /** 
+     * Sets the id of this object.
+     */
+    void setId(int id) { mId = id; }
 
     /**
      * Returns the name of this object. The name is usually just used for
@@ -240,6 +250,7 @@ public:
     MapObject *clone() const;
 
 private:
+    int mId;
     QString mName;
     QString mType;
     QPointF mPos;

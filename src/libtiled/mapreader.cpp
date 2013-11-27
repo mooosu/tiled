@@ -789,6 +789,7 @@ MapObject *MapReaderPrivate::readObject()
     Q_ASSERT(xml.isStartElement() && xml.name() == QLatin1String("object"));
 
     const QXmlStreamAttributes atts = xml.attributes();
+    const int id = atts.value(QLatin1String("id")).toString().toInt();
     const QString name = atts.value(QLatin1String("name")).toString();
     const unsigned gid = atts.value(QLatin1String("gid")).toString().toUInt();
     const int x = atts.value(QLatin1String("x")).toString().toInt();
@@ -801,7 +802,7 @@ MapObject *MapReaderPrivate::readObject()
     const QPointF pos = pixelToTileCoordinates(mMap, x, y);
     const QPointF size = pixelToTileCoordinates(mMap, width, height);
 
-    MapObject *object = new MapObject(name, type, pos, QSizeF(size.x(),
+    MapObject *object = new MapObject(id,name, type, pos, QSizeF(size.x(),
                                                               size.y()));
 
     bool ok;

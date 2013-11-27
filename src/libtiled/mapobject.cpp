@@ -41,10 +41,11 @@ MapObject::MapObject():
 {
 }
 
-MapObject::MapObject(const QString &name, const QString &type,
+MapObject::MapObject(int id, const QString &name, const QString &type,
                      const QPointF &pos,
                      const QSizeF &size):
     Object(MapObjectType),
+    mId(id),
     mName(name),
     mType(type),
     mPos(pos),
@@ -80,7 +81,7 @@ void MapObject::flip(FlipDirection direction)
 
 MapObject *MapObject::clone() const
 {
-    MapObject *o = new MapObject(mName, mType, mPos, mSize);
+    MapObject *o = new MapObject(mId,mName, mType, mPos, mSize);
     o->setProperties(properties());
     o->setPolygon(mPolygon);
     o->setShape(mShape);

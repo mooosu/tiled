@@ -39,9 +39,10 @@
 using namespace Tiled;
 
 Map::Map(Orientation orientation,
-         int width, int height, int tileWidth, int tileHeight):
+         int width, int height, int tileWidth, int tileHeight,int objectSeq):
     Object(MapType),
     mOrientation(orientation),
+    mObjectSeq(objectSeq),
     mWidth(width),
     mHeight(height),
     mTileWidth(tileWidth),
@@ -53,6 +54,7 @@ Map::Map(Orientation orientation,
 Map::Map(const Map &map):
     Object(map),
     mOrientation(map.mOrientation),
+    mObjectSeq(map.mObjectSeq),
     mWidth(map.mWidth),
     mHeight(map.mHeight),
     mTileWidth(map.mTileWidth),

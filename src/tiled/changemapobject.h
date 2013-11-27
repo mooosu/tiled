@@ -42,7 +42,8 @@ public:
     ChangeMapObject(MapDocument *mapDocument,
                     MapObject *object,
                     const QString &name,
-                    const QString &type);
+                    const QString &type,
+                    const int id);
 
     void undo() { swap(); }
     void redo() { swap(); }
@@ -54,6 +55,7 @@ private:
     MapObject *mMapObject;
     QString mName;
     QString mType;
+    int     mId;
 };
 
 /**

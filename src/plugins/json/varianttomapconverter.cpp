@@ -316,6 +316,7 @@ ObjectGroup *VariantToMapConverter::toObjectGroup(const QVariantMap &variantMap)
     foreach (const QVariant &objectVariant, variantMap["objects"].toList()) {
         const QVariantMap objectVariantMap = objectVariant.toMap();
 
+        const int id = objectVariantMap["id"].toInt();
         const QString name = objectVariantMap["name"].toString();
         const QString type = objectVariantMap["type"].toString();
         const int gid = objectVariantMap["gid"].toInt();
@@ -328,7 +329,7 @@ ObjectGroup *VariantToMapConverter::toObjectGroup(const QVariantMap &variantMap)
         const QPointF pos = toTile(x, y);
         const QPointF size = toTile(width, height);
 
-        MapObject *object = new MapObject(name, type,
+        MapObject *object = new MapObject(id, name, type,
                                           pos,
                                           QSizeF(size.x(), size.y()));
         object->setRotation(rotation);

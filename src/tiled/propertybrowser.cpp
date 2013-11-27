@@ -328,6 +328,7 @@ static QStringList objectTypeNames()
 void PropertyBrowser::addMapObjectProperties()
 {
     QtProperty *groupProperty = mGroupManager->addProperty(tr("Object"));
+    createProperty(IdProperty, QVariant::String, tr("Id"), groupProperty);
     createProperty(NameProperty, QVariant::String, tr("Name"), groupProperty);
 
     QtVariantProperty *typeProperty =
@@ -460,7 +461,8 @@ void PropertyBrowser::applyMapObjectValue(PropertyId id, const QVariant &val)
     case TypeProperty:
         command = new ChangeMapObject(mMapDocument, mapObject,
                                       mIdToProperty[NameProperty]->value().toString(),
-                                      mIdToProperty[TypeProperty]->value().toString());
+                                      mIdToProperty[TypeProperty]->value().toString(),
+                                      mIdToProperty[IdProperty]->value().toInt());
         break;
     case VisibleProperty:
         command = new SetMapObjectVisible(mMapDocument, mapObject, val.toBool());
@@ -678,6 +680,7 @@ void PropertyBrowser::updateProperties()
         const MapObject *mapObject = static_cast<const MapObject*>(mObject);
         mIdToProperty[NameProperty]->setValue(mapObject->name());
         mIdToProperty[TypeProperty]->setValue(mapObject->type());
+        mIdToProperty[IdProperty]->setValue(mapObject->id());
         mIdToProperty[VisibleProperty]->setValue(mapObject->isVisible());
         mIdToProperty[PositionProperty]->setValue(mapObject->position());
         mIdToProperty[SizeProperty]->setValue(mapObject->size());

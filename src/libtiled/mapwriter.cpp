@@ -163,6 +163,7 @@ void MapWriterPrivate::writeMap(QXmlStreamWriter &w, const Map *map)
 
     const QString orientation = orientationToString(map->orientation());
 
+    w.writeAttribute(QLatin1String("last_seq"), QString::number(map->currentSeq()));
     w.writeAttribute(QLatin1String("version"), QLatin1String("1.0"));
     w.writeAttribute(QLatin1String("orientation"), orientation);
     w.writeAttribute(QLatin1String("width"), QString::number(map->width()));
@@ -508,6 +509,7 @@ void MapWriterPrivate::writeObject(QXmlStreamWriter &w,
     w.writeStartElement(QLatin1String("object"));
     const QString &name = mapObject->name();
     const QString &type = mapObject->type();
+    w.writeAttribute(QLatin1String("id"), QString::number(mapObject->id()));
     if (!name.isEmpty())
         w.writeAttribute(QLatin1String("name"), name);
     if (!type.isEmpty())

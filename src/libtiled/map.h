@@ -87,7 +87,8 @@ public:
      */
     Map(Orientation orientation,
         int width, int height,
-        int tileWidth, int tileHeight);
+        int tileWidth, int tileHeight,
+        int objectSeq = 1);
 
     /**
      * Copy constructor. Makes sure that a deep-copy of the layers is created.
@@ -110,6 +111,19 @@ public:
     void setOrientation(Orientation orientation)
     { mOrientation = orientation; }
 
+
+    /**
+     * Returns the objectSeq of this map.
+     */
+
+    int currentSeq() const { return mObjectSeq; }
+
+    int nextSeq() { return mObjectSeq++; }
+
+    /**
+     * Sets the objectSeq of this map.
+     */
+    void setLastObjectSeq(int objectSeq ) { mObjectSeq = objectSeq; }
     /**
      * Returns the width of this map.
      */
@@ -321,6 +335,7 @@ private:
     void adoptLayer(Layer *layer);
 
     Orientation mOrientation;
+    int mObjectSeq;
     int mWidth;
     int mHeight;
     int mTileWidth;
