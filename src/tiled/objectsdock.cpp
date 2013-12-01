@@ -281,7 +281,7 @@ void ObjectsView::onPressed(const QModelIndex &index)
 {
     if (MapObject *mapObject = model()->toMapObject(mProxyModel->mapToSource(index)))
         mMapDocument->setCurrentObject(mapObject);
-    else if (ObjectGroup *objectGroup = model()->toObjectGroup(index))
+    else if (ObjectGroup *objectGroup = model()->toObjectGroup(mProxyModel->mapToSource(index)))
         mMapDocument->setCurrentObject(objectGroup);
 }
 
@@ -351,12 +351,12 @@ void ObjectsView::selectedObjectsChanged()
     clearSelection();
     foreach (MapObject *o, selectedObjects) {
         QModelIndex index = model()->index(o);
-        selectionModel()->select(mProxyModel->mapToSource(index), QItemSelectionModel::Select |  QItemSelectionModel::Rows);
+        selectionModel()->select(mProxyModel->mapFromSource(index), QItemSelectionModel::Select |  QItemSelectionModel::Rows);
     }
     mSynching = false;
 
     if (selectedObjects.count() == 1) {
         MapObject *o = selectedObjects.first();
-        scrollTo(model()->index(o));
+        scrollTo(mProxyModel->mapFromSource(model()->index(o)));
     }
 }
