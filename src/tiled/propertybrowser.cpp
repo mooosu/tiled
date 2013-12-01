@@ -457,6 +457,7 @@ void PropertyBrowser::applyMapObjectValue(PropertyId id, const QVariant &val)
     QUndoCommand *command = 0;
 
     switch (id) {
+    case IdProperty:
     case NameProperty:
     case TypeProperty:
         command = new ChangeMapObject(mMapDocument, mapObject,
